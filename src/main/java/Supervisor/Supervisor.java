@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import static java.lang.System.out;
-
+//It's a singleton because I only want one Supervisor instance orchestrating everything
 public class Supervisor extends ServerS {
 
     private static boolean vehicleControlConnected = false;
@@ -26,6 +26,27 @@ public class Supervisor extends ServerS {
     private static final Map<Integer,String> mMapConnectionModule = new HashMap<Integer, String>();
 
     private static final Map<Integer,Object> mMapCallbackModule = new HashMap<>(); //which callback is associated with module
+
+    private static volatile Supervisor mInstance;
+
+    protected Supervisor() {
+
+        //protecting against Reflection
+        if(mInstance!=null){
+            throw new RuntimeException("Use getInstance() only");
+        }
+    }
+
+    public static Supervisor getInstance() {
+
+        if(mInstance == null){
+            synchronized (Supervisor.class){
+                mInstance = new Supervisor();
+            }
+        }
+
+        return mInstance;
+    }
 
     public static void main(String[] args){
         try {
